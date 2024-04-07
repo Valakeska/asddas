@@ -1,0 +1,31 @@
+name: APICHECK  
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  style_check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x' 
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Install StyleCop.Analyzers
+      run: dotnet add ApiKyrsch/ApiKyrsch.csproj package StyleCop.Analyzers --version 1.1.118
+
+    - name: Run StyleCop analysis
+      run: dotnet build ApiKyrsch/ApiKyrsch.csproj --no-restore --configuration Release /p:StyleCopEnabled=true /p:StyleCopAllAnalyzers=true /p:StyleCopIgnoreGeneratedCode=true /verbosity:normal
